@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#16110f" />
+  <meta name="description" content="Demo técnica de novela visual con Javi, Sue y Smokey." />
+  <title>Entre líneas · Demo otome</title>
+  <link rel="preload" href="assets/key-art.webp" as="image" fetchpriority="high" />
+  <link rel="stylesheet" href="styles.css?v=0.1.0" />
+</head>
+<body>
+  <main class="app" id="app">
+    <section class="screen screen--menu is-active" id="screen-menu" aria-label="Menú principal">
+      <div class="menu__backdrop" aria-hidden="true"></div>
+      <div class="menu__shade" aria-hidden="true"></div>
+      <div class="menu__content">
+        <div class="menu__tag">NOVELA VISUAL · DEMO TÉCNICA</div>
+        <h1>Entre <span>líneas</span></h1>
+        <p class="menu__subtitle">Una tarde cualquiera. Tres amigos. Algunas decisiones que quizá no importen… todavía.</p>
+        <div class="menu__actions">
+          <button class="menu-btn menu-btn--primary" id="btn-new">Nueva partida</button>
+          <button class="menu-btn" id="btn-continue">Continuar</button>
+          <button class="menu-btn" id="btn-settings">Ajustes</button>
+        </div>
+        <p class="menu__hint">Demo v0.1.0 · Personajes y situaciones provisionales</p>
+      </div>
+    </section>
+
+    <section class="screen screen--game" id="screen-game" aria-label="Partida">
+      <div class="scene" id="scene">
+        <div class="scene__background" aria-hidden="true"></div>
+        <div class="scene__vignette" aria-hidden="true"></div>
+        <div class="scene__flash" id="scene-flash" aria-hidden="true"></div>
+
+        <header class="game-topbar">
+          <div class="chapter-pill"><span>✦</span><span id="chapter-label">Prólogo</span></div>
+          <div class="top-actions">
+            <button class="icon-btn" data-action="history" aria-label="Abrir historial">☷</button>
+            <button class="icon-btn" data-action="save" aria-label="Guardar partida">▣</button>
+            <button class="icon-btn" data-action="settings" aria-label="Ajustes">⚙</button>
+          </div>
+        </header>
+
+        <div class="stage" id="stage" aria-live="polite">
+          <div class="sprite-wrap sprite-wrap--javi" data-character="javi">
+            <div class="sprite sprite--javi" id="sprite-javi" role="img" aria-label="Javi"></div>
+            <div class="emote" id="emote-javi"></div>
+          </div>
+          <div class="sprite-wrap sprite-wrap--sue" data-character="sue">
+            <div class="sprite sprite--sue" id="sprite-sue" role="img" aria-label="Sue"></div>
+            <div class="emote" id="emote-sue"></div>
+          </div>
+          <div class="sprite-wrap sprite-wrap--smokey" data-character="smokey">
+            <div class="sprite sprite--smokey" id="sprite-smokey" role="img" aria-label="Smokey"></div>
+            <div class="emote" id="emote-smokey"></div>
+          </div>
+          <div class="sfx-word" id="sfx-word" aria-hidden="true"></div>
+        </div>
+
+        <div class="choice-panel" id="choice-panel" aria-label="Decisiones"></div>
+
+        <section class="dialogue" id="dialogue" aria-label="Diálogo">
+          <div class="dialogue__name" id="speaker-name">Narrador</div>
+          <div class="dialogue__body">
+            <p id="dialogue-text"></p>
+            <span class="dialogue__next" aria-hidden="true">⌄</span>
+          </div>
+          <button class="dialogue__tap" id="dialogue-tap" aria-label="Continuar diálogo"></button>
+        </section>
+
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="screen screen--ending" id="screen-ending" aria-label="Fin de la demo">
+      <div class="ending__backdrop"></div>
+      <div class="ending__content">
+        <span class="ending__eyebrow">DEMO COMPLETADA</span>
+        <h2>Hasta aquí llega el prólogo.</h2>
+        <p>La estructura ya está preparada para ampliar personajes, rutas, escenarios y decisiones.</p>
+        <div class="affinity" id="affinity-summary"></div>
+        <div class="ending__actions">
+          <button class="menu-btn menu-btn--primary" id="btn-replay">Volver a jugar</button>
+          <button class="menu-btn" id="btn-menu">Menú principal</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal-history" aria-hidden="true">
+    <div class="modal__panel modal__panel--wide">
+      <div class="modal__head"><h2>Historial</h2><button class="close-btn" data-close="history" aria-label="Cerrar">×</button></div>
+      <div class="history-list" id="history-list"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-settings" aria-hidden="true">
+    <div class="modal__panel">
+      <div class="modal__head"><h2>Ajustes</h2><button class="close-btn" data-close="settings" aria-label="Cerrar">×</button></div>
+      <label class="setting-row"><span>Velocidad de texto</span><select id="setting-speed"><option value="18">Rápida</option><option value="30" selected>Normal</option><option value="48">Lenta</option></select></label>
+      <label class="setting-row"><span>Reducir movimiento</span><input type="checkbox" id="setting-motion" /></label>
+      <label class="setting-row"><span>Efectos de sonido</span><input type="checkbox" id="setting-sound" checked /></label>
+      <p class="setting-note">Los sonidos de esta demo se generan en el navegador. No se usa ningún archivo de audio externo.</p>
+    </div>
+  </div>
+
+  <footer class="build-info">v0.1.0 · 08/08/2026</footer>
+
+  <script src="data/story.js?v=0.1.0"></script>
+  <script src="game.js?v=0.1.0"></script>
+</body>
+</html>
