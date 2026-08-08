@@ -1,8 +1,7 @@
 # Esta demo usa exactamente el CG conjunto aprobado de Javi, Sue y Smokey.
-# Las hojas originales de cada personaje siguen guardadas en images/characters
-# para preparar sprites individuales más adelante sin regenerar los modelos.
+# Las hojas originales de cada personaje se conservan en el repositorio como material fuente,
+# pero el build web usa solo el CG aprobado para evitar recortes o deformaciones.
 image cg cafe_group = Transform("images/cg/key-art.jpg", xysize=(1600, 900))
-image bg cafe_empty = Transform("images/backgrounds/cafe.jpg", xysize=(1600, 900))
 
 label start:
     $ afinidad_javi = 0
