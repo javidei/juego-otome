@@ -1,0 +1,85 @@
+name: Build Ren'Py Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'renpy-project/**'
+      - '.github/workflows/renpy-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: renpy-web-main
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y curl unzip bzip2
+
+      - name: Download Ren'Py 8.5.3
+        run: |
+          curl -fL --retry 3 -o renpy-sdk.tar.bz2 https://www.renpy.org/dl/8.5.3/renpy-8.5.3-sdk.tar.bz2
+          tar -xjf renpy-sdk.tar.bz2
+          curl -fL --retry 3 -o renpy-web.zip https://www.renpy.org/dl/8.5.3/renpy-8.5.3-web.zip
+          rm -rf web-support
+          mkdir web-support
+          unzip -q renpy-web.zip -d web-support
+          if [ -d web-support/web ]; then
+            rm -rf renpy-8.5.3-sdk/web renpy-8.5.3/web
+            if [ -d renpy-8.5.3-sdk ]; then mv web-support/web renpy-8.5.3-sdk/web; else mv web-support/web renpy-8.5.3/web; fi
+          elif [ -d web-support/renpy-8.5.3/web ]; then
+            if [ -d renpy-8.5.3-sdk ]; then cp -a web-support/renpy-8.5.3/web renpy-8.5.3-sdk/web; else cp -a web-support/renpy-8.5.3/web renpy-8.5.3/web; fi
+          fi
+          RENPY_DIR=$(find . -maxdepth 1 -type d -name 'renpy-8.5.3*' | head -n 1)
+          echo "RENPY_DIR=$RENPY_DIR" >> "$GITHUB_ENV"
+          test -f "$RENPY_DIR/renpy.sh"
+          test -d "$RENPY_DIR/web"
+
+      - name: Generate Ren'Py GUI
+        run: |
+          "$RENPY_DIR/renpy.sh" launcher generate_gui "$GITHUB_WORKSPACE/renpy-project" --width 1600 --height 900 --accent '#d7a75f' --boring '#100b09' --language spanish
+
+      - name: Lint Ren'Py project
+        env:
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          "$RENPY_DIR/renpy.sh" "$GITHUB_WORKSPACE/renpy-project" lint "$GITHUB_WORKSPACE/renpy-lint.txt" --error-code
+          cat "$GITHUB_WORKSPACE/renpy-lint.txt"
+
+      - name: Build Web distribution
+        env:
+          SDL_AUDIODRIVER: dummy
+          SDL_VIDEODRIVER: dummy
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/web-build"
+          mkdir -p "$GITHUB_WORKSPACE/web-build"
+          "$RENPY_DIR/renpy.sh" launcher web_build "$GITHUB_WORKSPACE/renpy-project" --destination "$GITHUB_WORKSPACE/web-build"
+          test -f "$GITHUB_WORKSPACE/web-build/index.html"
+
+      - name: Publish generated Web build in repository
+        run: |
+          rm -rf web
+          mkdir web
+          cp -a web-build/. web/
+          touch web/.nojekyll
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add web renpy-lint.txt
+          if git diff --cached --quiet; then
+            echo 'No generated changes.'
+          else
+            git commit -m 'build: publicar versión web de RenPy'
+            git push origin main
+          fi
