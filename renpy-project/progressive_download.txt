@@ -1,0 +1,6 @@
+# RenPyWeb progressive download rules
+- image game/gui/**
+- image game/images/cg/key-art.webp
++ image game/images/**
++ music game/audio/**
++ voice game/voice/**
