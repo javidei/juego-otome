@@ -41,21 +41,23 @@ jobs:
           elif [ -d web-support/renpy-8.5.3/web ]; then
             if [ -d renpy-8.5.3-sdk ]; then cp -a web-support/renpy-8.5.3/web renpy-8.5.3-sdk/web; else cp -a web-support/renpy-8.5.3/web renpy-8.5.3/web; fi
           fi
-          RENPY_DIR=$(find . -maxdepth 1 -type d -name 'renpy-8.5.3*' | head -n 1)
+          RENPY_DIR=$(find "$GITHUB_WORKSPACE" -maxdepth 1 -type d -name 'renpy-8.5.3*' | head -n 1)
           echo "RENPY_DIR=$RENPY_DIR" >> "$GITHUB_ENV"
           test -f "$RENPY_DIR/renpy.sh"
           test -d "$RENPY_DIR/web"
 
       - name: Generate Ren'Py GUI
         run: |
-          "$RENPY_DIR/renpy.sh" launcher generate_gui "$GITHUB_WORKSPACE/renpy-project" --width 1600 --height 900 --accent '#d7a75f' --boring '#100b09' --language spanish
+          cd "$RENPY_DIR"
+          ./renpy.sh launcher generate_gui "$GITHUB_WORKSPACE/renpy-project" --width 1600 --height 900 --accent '#d7a75f' --boring '#100b09' --language spanish
 
       - name: Lint Ren'Py project
         env:
           SDL_AUDIODRIVER: dummy
           SDL_VIDEODRIVER: dummy
         run: |
-          "$RENPY_DIR/renpy.sh" "$GITHUB_WORKSPACE/renpy-project" lint "$GITHUB_WORKSPACE/renpy-lint.txt" --error-code
+          cd "$RENPY_DIR"
+          ./renpy.sh "$GITHUB_WORKSPACE/renpy-project" lint "$GITHUB_WORKSPACE/renpy-lint.txt" --error-code
           cat "$GITHUB_WORKSPACE/renpy-lint.txt"
 
       - name: Build Web distribution
@@ -65,11 +67,13 @@ jobs:
         run: |
           rm -rf "$GITHUB_WORKSPACE/web-build"
           mkdir -p "$GITHUB_WORKSPACE/web-build"
-          "$RENPY_DIR/renpy.sh" launcher web_build "$GITHUB_WORKSPACE/renpy-project" --destination "$GITHUB_WORKSPACE/web-build"
+          cd "$RENPY_DIR"
+          ./renpy.sh launcher web_build "$GITHUB_WORKSPACE/renpy-project" --destination "$GITHUB_WORKSPACE/web-build"
           test -f "$GITHUB_WORKSPACE/web-build/index.html"
 
       - name: Publish generated Web build in repository
         run: |
+          cd "$GITHUB_WORKSPACE"
           rm -rf web
           mkdir web
           cp -a web-build/. web/
@@ -81,5 +85,6 @@ jobs:
             echo 'No generated changes.'
           else
             git commit -m 'build: publicar versión web de RenPy'
+            git pull --rebase origin main
             git push origin main
           fi
