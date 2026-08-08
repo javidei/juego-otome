@@ -25,7 +25,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y curl unzip bzip2 webp
+        run: sudo apt-get update && sudo apt-get install -y curl unzip bzip2 imagemagick file
 
       - name: Download Ren'Py 8.5.3
         run: |
@@ -48,19 +48,32 @@ jobs:
 
       - name: Normalize approved artwork for Ren'Py
         run: |
-          # Conservamos exactamente el mismo dibujo. Solo cambiamos el contenedor
-          # WebP a PNG porque pygame_sdl2 de Ren'Py rechaza estos WebP concretos.
-          dwebp renpy-project/game/images/cg/key-art.webp -o renpy-project/game/images/cg/key-art.png
-          dwebp renpy-project/game/images/backgrounds/cafe.webp -o renpy-project/game/images/backgrounds/cafe.png
-          rm -f renpy-project/game/images/cg/key-art.webp renpy-project/game/images/backgrounds/cafe.webp
-          if [ -f renpy-project/web-presplash.webp ]; then
-            dwebp renpy-project/web-presplash.webp -o renpy-project/web-presplash.png
-            rm -f renpy-project/web-presplash.webp
-          fi
-          sed -i 's/key-art\.webp/key-art.png/g; s/cafe\.webp/cafe.png/g' renpy-project/game/script.rpy
-          # La demo es pequeña: no necesitamos descarga progresiva y evitamos que
-          # el empaquetador intente procesar hojas de referencia que aún no usamos.
-          rm -f renpy-project/progressive_download.txt
+          set -euxo pipefail
+          SRC="renpy-project/game/images/cg/key-art.webp"
+          DST="renpy-project/game/images/cg/key-art.jpg"
+          test -f "$SRC"
+          MIME=$(file -b --mime-type "$SRC")
+          echo "Detected key art MIME: $MIME"
+          case "$MIME" in
+            image/jpeg)
+              cp "$SRC" "$DST"
+              ;;
+            image/png|image/webp)
+              convert "$SRC" -quality 96 "$DST"
+              ;;
+            *)
+              echo "Unsupported or corrupt key art: $MIME"
+              exit 1
+              ;;
+          esac
+          file "$DST"
+          identify "$DST"
+
+          # Las demás hojas/imagenes antiguas son material fuente y no deben ser
+          # cargadas por Ren'Py en esta demo. Se eliminan solo en el runner.
+          find renpy-project/game/images -type f \( -name '*.webp' -o -name '*.avif' \) -delete
+          rm -f renpy-project/web-presplash.webp renpy-project/progressive_download.txt
+          test -f "$DST"
 
       - name: Generate Ren'Py GUI
         run: |
@@ -87,20 +100,31 @@ jobs:
           ./renpy.sh launcher web_build "$GITHUB_WORKSPACE/renpy-project" --destination "$GITHUB_WORKSPACE/web-build"
           test -f "$GITHUB_WORKSPACE/web-build/index.html"
 
-      - name: Publish generated Web build in repository
+      - name: Publish Ren'Py build at GitHub Pages root
         run: |
+          set -euxo pipefail
           cd "$GITHUB_WORKSPACE"
+
+          # Deshacemos únicamente cambios temporales usados para compilar.
+          git restore renpy-project
+          git clean -fd renpy-project
+
+          # Conservamos una copia del build y lo publicamos también en la raíz,
+          # que es la carpeta que GitHub Pages sirve actualmente.
           rm -rf web
           mkdir web
           cp -a web-build/. web/
           touch web/.nojekyll
+          cp -a web-build/. ./
+          touch .nojekyll
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add web renpy-lint.txt
+          git add -A
           if git diff --cached --quiet; then
             echo 'No generated changes.'
           else
-            git commit -m 'build: publicar versión web de RenPy'
+            git commit -m 'build: publicar RenPy 0.2.0 en GitHub Pages'
             git pull --rebase origin main
             git push origin main
           fi
