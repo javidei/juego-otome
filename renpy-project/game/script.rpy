@@ -1,11 +1,8 @@
+# Esta demo usa exactamente el CG conjunto aprobado de Javi, Sue y Smokey.
+# Las hojas originales de cada personaje siguen guardadas en images/characters
+# para preparar sprites individuales más adelante sin regenerar los modelos.
 image cg cafe_group = Transform("images/cg/key-art.webp", xysize=(1600, 900))
 image bg cafe_empty = Transform("images/backgrounds/cafe.webp", xysize=(1600, 900))
-
-# Los sprites se conservan como hojas de referencia exactas para separar/usar
-# progresivamente sin regenerar los modelos.
-image reference javi = "images/characters/javi-sheet.webp"
-image reference sue = "images/characters/sue-sheet.webp"
-image reference smokey = "images/characters/smokey-sheet.webp"
 
 label start:
     $ afinidad_javi = 0
