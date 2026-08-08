@@ -1,39 +1,53 @@
 # Entre líneas — juego-otome
 
-Demo técnica de novela visual/otome web con **Javi, Sue y Smokey**.
+Novela visual / otome construida con **Ren'Py** y protagonizada inicialmente por Javi, Sue y Smokey.
 
 ## Estado
 
-Versión `0.1.0` · 08/08/2026.
+Versión `0.2.0` · 08/08/2026 · migración desde la demo HTML/JavaScript a Ren'Py 8.5.3.
 
-Esta primera demo sirve como base para sustituir después la historia provisional por personajes, rutas, diálogos y situaciones definitivas.
+La historia actual es deliberadamente corta y genérica: sirve para validar el motor, las decisiones, el enfoque de cámara, los efectos y el guardado antes de escribir las rutas reales.
 
-## Incluye
+## Tecnología
 
-- Motor de escenas y diálogos en JavaScript sin dependencias.
-- Tres personajes con tres expresiones cada uno a partir de los modelos visuales aprobados.
-- Dos decisiones simples y sistema de afinidad.
-- Zoom de cámara, foco de personaje, sacudidas, emotes y onomatopeyas animadas.
-- Sonidos sencillos generados con Web Audio (sin archivos externos).
-- Guardado y continuación mediante `localStorage`.
-- Historial de diálogos.
-- Ajustes de velocidad, reducción de movimiento y sonido.
-- Diseño responsive para PC y móvil.
-- GitHub Pages listo desde la rama `main`.
+- Ren'Py 8.5.3.
+- Proyecto fuente en `renpy-project/`.
+- Compilación Web automática con GitHub Actions.
+- Publicación mediante GitHub Pages.
+- Rama `backup-html-demo` como respaldo de la demo web anterior.
+
+## Demo
+
+Incluye:
+
+- Javi, Sue y Smokey con los modelos visuales ya aprobados.
+- Escena principal del café musical.
+- Diálogos y elecciones.
+- Afinidad básica.
+- Zoom y foco de cámara.
+- Sacudidas y transiciones.
+- Onomatopeyas y pequeños efectos visuales.
+- Guardado/carga e historial proporcionados por Ren'Py.
+- Menú y preferencias estándar de Ren'Py.
 
 ## Estructura
 
 ```text
-assets/       Fondos, key art y hojas de sprites
-data/story.js Historia y decisiones provisionales
-game.js       Motor de la novela visual
-styles.css    Interfaz, responsive y animaciones
-index.html    Aplicación
+renpy-project/
+├── game/
+│   ├── characters.rpy
+│   ├── options.rpy
+│   ├── screens_extra.rpy
+│   ├── script.rpy
+│   ├── transforms.rpy
+│   └── images/
+└── progressive_download.txt
+
+web/                  Build Web generado automáticamente
+.github/workflows/    Compilación Ren'Py Web
 ```
 
-## Desarrollo de la historia
-
-La historia está separada en `data/story.js` para poder añadir capítulos y rutas sin rehacer el motor. Cada nodo puede indicar hablante, texto, foco, expresiones, efectos, decisiones y afinidad.
+Los antiguos archivos HTML/JavaScript se mantienen temporalmente en `main` durante la migración y quedan además preservados en `backup-html-demo`.
 
 ## Publicación
 
