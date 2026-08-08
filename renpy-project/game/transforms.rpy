@@ -40,3 +40,44 @@ transform pop_texto:
     easein 0.12 zoom 1.0
     pause 0.55
     easein 0.2 alpha 0.0
+
+transform sfx_javi:
+    xalign 0.18
+    yalign 0.56
+    alpha 0.0
+    zoom 0.70
+    easeout 0.16 alpha 1.0 zoom 1.08
+    easein 0.10 zoom 1.0
+    pause 0.28
+    easein 0.18 alpha 0.0
+
+transform sfx_sue:
+    xalign 0.54
+    yalign 0.31
+    alpha 0.0
+    zoom 0.65
+    easeout 0.16 alpha 1.0 zoom 1.12
+    easein 0.10 zoom 1.0
+    pause 0.28
+    easein 0.18 alpha 0.0
+
+transform sfx_smokey:
+    xalign 0.83
+    yalign 0.30
+    alpha 0.0
+    zoom 0.65
+    easeout 0.16 alpha 1.0 zoom 1.12
+    easein 0.10 zoom 1.0
+    pause 0.28
+    easein 0.18 alpha 0.0
+
+transform sfx_centro:
+    xalign 0.5
+    yalign 0.36
+    alpha 0.0
+    zoom 0.55
+    rotate -4
+    easeout 0.12 alpha 1.0 zoom 1.18 rotate 3
+    easein 0.10 zoom 1.0 rotate 0
+    pause 0.30
+    easein 0.18 alpha 0.0
